@@ -1,5 +1,5 @@
 {
-  "name": "hw1_classify_files",
+  "name": "hw1_group_files",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "optimist": "^0.6.1"
   }
 }
