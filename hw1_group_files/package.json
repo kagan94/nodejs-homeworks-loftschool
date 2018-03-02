@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "mkdirp": "^0.5.1",
+    "mkdirp-sync": "0.0.3",
     "optimist": "^0.6.1"
   }
 }

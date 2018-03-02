@@ -5,16 +5,12 @@
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
+const mkdirSync = require('mkdirp-sync');
 const argv = require('optimist').argv;
 
 const srcDir = path.normalize(argv.sourceDir || path.join(__dirname, 'sourceDir'));
 const resDir = path.normalize(argv.resultDir || path.join(__dirname, 'output'));
-const removeSrcFiles = !!argv.removeSrcFiles;
-
-if (!fs.existsSync(srcDir)) {
-  console.log('Target folder does not exist');
-  process.exit(1);
-}
+const removeSrcFiles = !!argv.removeSrcFiles || false;
 
 // Sync. method
 // const deleteFolderRecursively = (tgtPath) => {
@@ -33,29 +29,35 @@ if (!fs.existsSync(srcDir)) {
 //   });
 // };
 
-const deleteFolderRecursively = (tgtPath, cb) => {
-  fs.stat(tgtPath, function (err, tgtPathFstat) {
+const deleteFolderRecursively = (resourcePath, cb, deleteSelfFolder = true) => {
+  fs.stat(resourcePath, function (err) {
     if (err) return cb(err);
 
-    fs.readdir(tgtPath, function (err, files) {
+    fs.readdir(resourcePath, function (err, files) {
       const totalResources = files.length;
       let totalProcessed = 0;
 
       // Check if we can remove target dir
-      const checkAndRemoveDir = function (resourcePath, _totalResources, _totalProcessed) {
-        console.log(_totalProcessed, _totalResources);
-        if (_totalProcessed === _totalResources) {
-          console.log('should remove dir: ' + resourcePath);
+      const checkAndRemoveDir = function () {
+        if (totalProcessed === totalResources) {
           const removeCurrentFolderCb = function (err) {
             if (err) return cb(err);
-            cb(false);
+
+            return cb(false);
           };
-          fs.rmdir(resourcePath, removeCurrentFolderCb);
+
+          if (deleteSelfFolder)
+            return fs.rmdir(resourcePath, removeCurrentFolderCb);
+          return cb(false);
         }
       };
 
-      files.forEach((file, idx) => {
-        const fpath = path.join(tgtPath, file);
+      if (totalResources === 0) {
+        return checkAndRemoveDir();
+      }
+
+      files.forEach(function (file, idx) {
+        const fpath = path.join(resourcePath, file);
 
         fs.stat(fpath, function (err, fstats) {
           if (err) return cb(err);
@@ -66,73 +68,100 @@ const deleteFolderRecursively = (tgtPath, cb) => {
               if (err) return cb(err);
 
               totalProcessed++;
-              console.log(totalProcessed, totalResources);
-              checkAndRemoveDir(fpath, totalResources, totalProcessed);
+              // console.log(totalProcessed, totalResources);
+              checkAndRemoveDir();
             };
             deleteFolderRecursively(fpath, deleteSubfolderCb);
           } else {
             // Remove file
             fs.unlink(fpath, function (err) {
-              console.log(err);
               if (err) return cb(err);
 
               totalProcessed++;
-              checkAndRemoveDir(fpath, totalResources, totalProcessed);
+              checkAndRemoveDir();
             });
           }
         });
-        checkAndRemoveDir(fpath, totalResources, totalProcessed);
       });
     });
   });
 };
 
-deleteFolderRecursively(resDir, (err, res) => {
-  if (err) process.exit(1);
-
-  console.log('deletion was done', res);
-});
+const cleanOutputFolder = (function () {
+  return (outputDir, cb) => {
+    if (fs.existsSync(outputDir)) {
+      const deleteSelfFolder = false;
+      return deleteFolderRecursively(outputDir, cb, deleteSelfFolder);
+    }
+    // Create target dir recursively
+    mkdirp(outputDir, (err) => {
+      if (err) return cb(err);
+      return cb(false);
+    });
+  };
+})();
 
 // Sync Save file
-// const saveFileToOutput = (fullFilePath, filename, fileStats) => {
-//   const classDir = filename[0].toUpperCase();
-//   const fileExt = path.extname(filename).slice(1);
-//   const newFilePath = path.join(resDir, fileExt, classDir, filename);
-//
-//   // Create target dir recursively
-//   mkdirp(newFilePath, (err) => {
-//     if (err) {
-//       return console.log(err);
-//     } else {
-//       if (fs.existsSync(newFilePath)) {
-//         return console.log('Filename %s already exists in output folder', filename);
-//       }
-//
-//       fs.copyFile(fullFilePath, newFilePath, (err) => {
-//         if (err) return console.log(err.message);
-//
-//         console.log('Copied successfully');
-//       });
-//     }
-//   });
-// };
-//
-// const groupFiles = (tgtPath) => {
-//   fs.readdirSync(tgtPath).forEach((filename, idx) => {
-//     const fpath = path.join(tgtPath, filename);
-//     const fstats = fs.statSync(fpath);
-//
-//     if (fstats.isDirectory()) {
-//       const nextPath = path.join(tgtPath, filename);
-//       groupFiles(nextPath);
-//     } else {
-//       saveFileToOutput(fpath, filename, fstats);
-//
-//       if (removeSrcFiles) {
-//         fs.unlinkSync(fpath);
-//       }
-//     }
-//   });
-// };
-//
-// groupFiles(srcDir);
+const saveFileToOutput = (function () {
+  return (fullFilePath, filename) => {
+    const classDir = filename[0].toUpperCase();
+    const fileExt = path.extname(filename).slice(1);
+    const classDirPath = path.join(resDir, fileExt, classDir);
+    const newFilePath = path.join(classDirPath, filename);
+
+    // Create target dir recursively
+    if (!fs.existsSync(classDirPath)) {
+      mkdirSync(classDirPath);
+    }
+
+    if (fs.existsSync(newFilePath))
+      console.log('Filename ' + filename + ' already exists in output folder');
+
+    try {
+      fs.copyFileSync(fullFilePath, newFilePath);
+    } catch (err) {
+      console.log('onCopyFileError', err.message);
+    }
+  };
+})();
+
+const groupFiles = (function (removeSrcFiles) {
+  return (tgtDirPath, deleteSelfDir = false) => {
+    let nextPathDeleteSelfFolder = removeSrcFiles;
+
+    fs.readdirSync(tgtDirPath).forEach((filename, idx) => {
+      const fpath = path.join(tgtDirPath, filename);
+      const fstats = fs.statSync(fpath);
+
+      if (fstats.isDirectory()) {
+        const nextPath = path.join(tgtDirPath, filename);
+        groupFiles(nextPath, nextPathDeleteSelfFolder);
+      } else {
+        saveFileToOutput(fpath, filename);
+        if (removeSrcFiles)
+          fs.unlinkSync(fpath);
+      }
+    });
+    if (deleteSelfDir)
+      fs.rmdirSync(tgtDirPath);
+  };
+})(removeSrcFiles);
+
+if (!fs.existsSync(srcDir)) {
+  console.log('Source folder does not exist');
+  process.exit(1);
+}
+
+cleanOutputFolder(resDir, (err) => {
+  if (err) return console.log(err);
+
+  console.log('Output folder was cleaned successfully');
+  console.log('Start grouping files/dirs');
+
+  mkdirp(srcDir, (err) => {
+    if (err) return console.log(err);
+
+    const deleteSelfDir = true;
+    groupFiles(srcDir, deleteSelfDir);
+  });
+});

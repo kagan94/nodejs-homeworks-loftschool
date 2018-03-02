@@ -6,6 +6,7 @@
       2,
       "always"
     ],
+    "curly": 0,
     "no-unused-vars": 1
   }
 }
