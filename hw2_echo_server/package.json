@@ -1,5 +1,5 @@
 {
-  "name": "hw1_group_files",
+  "name": "hw2_echo_server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mkdirp": "^0.5.1",
-    "mkdirp-sync": "0.0.3",
-    "optimist": "^0.6.1"
+    "dateformat": "^3.0.3",
+    "delay": "^2.0.0",
+    "yargs": "^11.0.0"
   }
 }
