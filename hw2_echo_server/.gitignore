@@ -61,4 +61,4 @@ typings/
 .next
 
 # Custom dirs/files
-output/*
+output

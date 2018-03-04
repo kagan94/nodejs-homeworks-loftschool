@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const util = require('util');
-const mkdirSync = require('mkdirp-sync');
 const argv = require('optimist').argv;
 
 const srcDir = path.normalize(argv.sourceDir || path.join(__dirname, 'sourceDir'));
@@ -51,6 +50,14 @@ const deleteFolderRecursively = async (resourcePath, deleteSelfFolder = true) =>
 
   const resources = await fsReaddirPromise(resourcePath);
   let promiseTasks = [];
+
+  console.log(resourcePath);
+
+  if (resources.length === 0) {
+    if (deleteSelfFolder)
+      await fsRmdirPromise(resourcePath);
+    return;
+  }
 
   for (let i = 0; i < resources.length; i++) {
     let task = async () => {
