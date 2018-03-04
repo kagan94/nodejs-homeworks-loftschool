@@ -32,24 +32,6 @@ const intervalDelay = args.intervalDelay || 1000;
 const closeConnectionDelayMs = args.closeConnectionAfterDelay || 5000;
 let clientId = 0;
 
-// async function serveClient (clientId) {
-//   return new Promise((resolve, reject) => {
-//     var startTime = new Date().getTime();
-//
-//     var interval = setInterval(function printUTCDateTime () {
-//       var endTime = new Date().getTime();
-//       const timeElapsed = endTime - startTime;
-//
-//       console.log(clientId, getUTCDateTime(), timeElapsed, startTime, endTime);
-//
-//       if (timeElapsed >= closeConnectionAfterMs) {
-//         clearInterval(interval);
-//         resolve(getUTCDateTime());
-//       }
-//     }, intervalDelay);
-//   });
-// }
-
 const getUTCDateTime = () => dateFormat(new Date(), 'yyyy-mm-dd H:MM:ss', useUTCDateTime);
 const printUTCDateTime = (clientId) => console.log('Client %s: %s', clientId, getUTCDateTime());
 
