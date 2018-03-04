@@ -3,11 +3,11 @@
 
 Run script:
 ```
-node main.js 
+node index.js 
     --sourceDir="./sourceDir" (optional)
     --resultDir="./resultDir" (optional)
     --removeSrcFiles=false (optional) - can be true/false/0/1
 ```
 
 Example of complete command:  
-`node main.js --sourceDir="sourceDir" --resultDir="out" --removeSrcFiles=true`
+`node index.js --sourceDir="sourceDir" --resultDir="out" --removeSrcFiles=true`

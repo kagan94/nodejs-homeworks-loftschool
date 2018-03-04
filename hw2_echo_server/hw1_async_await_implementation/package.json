@@ -1,16 +1,16 @@
 {
-  "name": "hw1_group_files",
+  "name": "hw1_async_await_implementation",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "mkdirp-sync": "0.0.3",
     "optimist": "^0.6.1"
   }
 }
