@@ -17,19 +17,14 @@ const fsCopyFilePromise = util.promisify(fs.copyFile);
 
 const main = async () => {
   if (!fs.existsSync(srcDir)) {
-    console.log('Source folder does not exist');
-    process.exit(1);
+    throw new Error('Source folder does not exist');
   }
 
-  try {
-    await cleanOutputFolder(resDir);
-    await mkdirpPromise(srcDir);
+  await cleanOutputFolder(resDir);
+  await mkdirpPromise(srcDir);
 
-    const deleteSelfDir = false;
-    await groupFiles(srcDir, deleteSelfDir);
-  } catch (err) {
-    console.log(err);
-  }
+  const deleteSelfDir = false;
+  await groupFiles(srcDir, deleteSelfDir);
 };
 
 const cleanOutputFolder = async (outputDir) => {
@@ -42,16 +37,8 @@ const cleanOutputFolder = async (outputDir) => {
 };
 
 const deleteFolderRecursively = async (resourcePath, deleteSelfFolder = true) => {
-  try {
-    await fsStatPromise(resourcePath);
-  } catch (err) {
-    return console.log(err);
-  }
-
   const resources = await fsReaddirPromise(resourcePath);
   let promiseTasks = [];
-
-  console.log(resourcePath);
 
   if (resources.length === 0) {
     if (deleteSelfFolder)
@@ -60,22 +47,28 @@ const deleteFolderRecursively = async (resourcePath, deleteSelfFolder = true) =>
   }
 
   for (let i = 0; i < resources.length; i++) {
-    let task = async () => {
-      const fpath = path.join(resourcePath, resources[i]);
-      const fstats = await fsStatPromise(fpath);
+    let runTask = async function () {
+      const targetPath = path.join(resourcePath, resources[i]);
+      const targetStat = await fsStatPromise(targetPath);
 
-      if (fstats.isDirectory()) {
-        await deleteFolderRecursively(fpath, true);
+      if (targetStat.isDirectory()) {
+        await deleteFolderRecursively(targetPath, true);
       } else {
-        await fsUnlinkPromise(fpath);
+        await fsUnlinkPromise(targetPath);
       }
     };
-    promiseTasks.push(task);
+    promiseTasks.push(runTask());
   }
 
-  // Resolve promises concurrently
-  Promise.all(promiseTasks)
-    .then(async () => (deleteSelfFolder ? await fsRmdirPromise(resourcePath) : null));
+  await Promise.all(promiseTasks);
+
+  if (deleteSelfFolder) {
+    try {
+      await fsRmdirPromise(resourcePath);
+    } catch (err) {
+      console.log('deleteSelfFolder', resourcePath, err);
+    }
+  }
 };
 
 const groupFiles = async (tgtDirPath, deleteSelfDir = false) => {
@@ -117,4 +110,6 @@ const saveFileToOutput = async (fullFilePath, filename) => {
     .catch(console.log.bind(console));
 };
 
-main();
+main()
+  .then(() => console.log('Done'))
+  .catch(err => console.error(err.message));
