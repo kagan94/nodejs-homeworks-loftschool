@@ -1,0 +1,41 @@
+{
+  "users": [
+    {
+      "email": "test@test.com",
+      "password": "test123"
+    }
+  ],
+  "skills": {
+    "age": "321",
+    "concerts": "2",
+    "cities": "2",
+    "years": "32"
+  },
+  "products": [
+    {
+      "name": "Test 1",
+      "photo": "1520709753714.jpg",
+      "price": 150
+    },
+    {
+      "name": "Test 2",
+      "photo": "1520709766231.jpg",
+      "price": 200
+    },
+    {
+      "name": "Test 3",
+      "photo": "1520709779682.jpg",
+      "price": 599.99
+    },
+    {
+      "name": "Test 4",
+      "photo": "1520709795748.jpg",
+      "price": 780
+    },
+    {
+      "name": "Test 5",
+      "photo": "1520710017327.jpg",
+      "price": 123
+    }
+  ]
+}
