@@ -1,0 +1,35 @@
+{
+  "name": "builder",
+  "version": "0.0.1",
+  "author": "krabaton",
+  "license": "ISC",
+  "devDependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "morgan": "~1.9.0",
+    "pug": "2.0.0-beta11",
+    "serve-favicon": "~2.4.5"
+  },
+  "dependencies": {
+    "connect-flash": "^0.1.1",
+    "formidable": "^1.2.0",
+    "jquery": "^3.3.1",
+    "koa": "^2.5.0",
+    "koa-body": "^2.5.0",
+    "koa-compose": "^4.0.0",
+    "koa-compress": "^2.0.0",
+    "koa-connect-flash": "^0.1.2",
+    "koa-logger": "^3.1.0",
+    "koa-pug": "^3.0.0-2",
+    "koa-router": "^7.4.0",
+    "koa-session": "^5.8.1",
+    "koa-static": "^4.0.2",
+    "lowdb": "^1.0.0",
+    "nodemailer": "^4.6.2",
+    "normalize.css": "^7.0.0",
+    "notifyjs-browser": "git+https://github.com/jpillora/notifyjs.git",
+    "promisify": "0.0.3",
+    "pug": "^2.0.0-beta11"
+  }
+}

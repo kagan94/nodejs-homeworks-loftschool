@@ -1,0 +1,10 @@
+extends ../_template
+
+block variables
+  - var title = 'Error page'
+
+block content
+  include ../common/_header
+  h1 #{error}
+  //pre #{error.stack}
+  include ../common/_footer

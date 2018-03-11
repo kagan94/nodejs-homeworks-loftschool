@@ -1,0 +1,18 @@
+section.form
+  .container
+    if (msgsemail)
+      .status= msgemail
+    .form__subtitle.subtitle Контактные данные
+    h2.form__title.title Пишите, пообщаемся
+    form(action="/" method="POST").form-email
+      .form-email__line
+        label.form-email__label(for="") Имя *
+        input.form-email__input(type="text" name="name" required)
+      .form-email__line
+        label.form-email__label(for="") Email *
+        input.form-email__input(type="email" name="email" required=)
+      .form-email__line
+        label.form-email__label(for="") Сообщение *
+        textarea(name="message" required).form-email__textarea
+      .form-email__line
+        button(type="submit").form-email__button.button Отправить
