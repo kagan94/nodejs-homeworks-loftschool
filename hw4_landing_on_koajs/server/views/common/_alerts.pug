@@ -1,0 +1,11 @@
+script(defer).
+  var errors = !{JSON.stringify(errors)}
+  var success = "!{success}";
+
+  Object.keys(errors).forEach(function(idx) {
+    $.notify(errors[idx], "error");
+  });
+
+  if (success) {
+    $.notify(success, "success");
+  }
