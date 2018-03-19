@@ -1,0 +1,54 @@
+extends ../_template-admin
+
+block variables
+  - var title = 'Admin page'
+
+block content
+  .wrapper
+    header.admin-header
+      .container.admin-header__container
+        .admin-header__title Административная панель
+        a(href="/").admin-header__link Вернуться на сайт
+        | &nbsp; &nbsp;
+        a(href="/logout").admin-header__link Выйти
+    section.admin-content
+      .container.admin-content__container
+        .form-container
+          form.form-skill(action='/admin/skills' method="POST")
+            .form-title Счетчики
+            if (msgskill)
+              .status= msgskill
+            label.form-skill__input-line 
+              span.form-skill__input-title Возраст
+              input(name="age" type="number" value=skills.age || '' required).form-skill__input
+            label.form-skill__input-line 
+              span.form-skill__input-title Концертов
+              input(name="concerts" type="number" value=skills.concerts || '' required).form-skill__input
+            label.form-skill__input-line 
+              span.form-skill__input-title Число городов
+              input(name="cities" type="number" value=skills.cities || '' required).form-skill__input
+            label.form-skill__input-line 
+              span.form-skill__input-title Лет на сцене
+              input(name="years" type="number" value=skills.years || '' required).form-skill__input
+            .form__btns.form-skill__input-line
+              button(type="submit").button Сохранить
+          form.form-upload(action='/admin/products' method="POST" enctype="multipart/form-data")
+            .form-title Добавить товар
+            if (msgfile)
+              .status= msgfile
+            .form-upload__input-line
+              .form-upload__wraper
+                label.form-upload__label
+                  input(name="photo" type="file" accept="image/*" required).form-upload__input-file
+                  span.form-upload__input-file-title Загрузить фото
+            .form-upload__input-line
+              input(name="name" type="text" placeholder="Название" required).form-upload__input
+            .form-upload__input-line
+              input(name="price" type="number" placeholder="Цена" required).form-upload__input
+            .form-upload__input-line.form-upload__input-line--btn
+              button(type="submit").button Добавить
+
+block scripts
+  script.
+    $('form.form-skill').validate();
+    $('form.form-upload').validate();

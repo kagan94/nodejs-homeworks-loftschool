@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Admin page</title>
+    <meta content="" name="author">
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <link rel="stylesheet" href="/assets/css/foundation.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <script src="/assets/js/foundation.js" defer></script>
+    <script src="/assets/js/app.js" defer></script>
+    <script src="/assets/js/admin.js" defer></script><!--[if lt IE 9]>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script><![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="admin-header">
+        <div class="container admin-header__container">
+          <div class="admin-header__title">Административная панель</div><a class="admin-header__link" href="/">Вернуться на сайт</a>
+        </div>
+      </header>
+      <section class="admin-content">
+        <div class="container admin-content__container">
+          <div class="form-container">
+            <form class="form-skill" action="/admin/skills" method="POST">
+              <div class="form-title">Счетчики</div>
+              <label class="form-skill__input-line"> <span class="form-skill__input-title">Возраст</span>
+                <input class="form-skill__input" name="age" type="number">
+              </label>
+              <label class="form-skill__input-line"> <span class="form-skill__input-title">Концертов</span>
+                <input class="form-skill__input" name="concerts" type="number">
+              </label>
+              <label class="form-skill__input-line"> <span class="form-skill__input-title">Число городов</span>
+                <input class="form-skill__input" name="cities" type="number">
+              </label>
+              <label class="form-skill__input-line"> <span class="form-skill__input-title">Лет на сцене</span>
+                <input class="form-skill__input" name="years" type="number">
+              </label>
+              <div class="form__btns form-skill__input-line">
+                <button class="button" type="submit">Сохранить</button>
+              </div>
+            </form>
+            <form class="form-upload" action="/admin/upload" method="POST" enctype="application/x-www-form-urlencoded">
+              <div class="form-title">Добавить товар</div>
+              <div class="form-upload__input-line">
+                <div class="form-upload__wraper">
+                  <label class="form-upload__label">
+                    <input class="form-upload__input-file" name="photo" type="file" required accept="image/*"><span class="form-upload__input-file-title">Загрузить фото</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-upload__input-line">
+                <input class="form-upload__input" name="name" type="text" placeholder="Название">
+              </div>
+              <div class="form-upload__input-line">
+                <input class="form-upload__input" name="price" type="text" placeholder="Цена">
+              </div>
+              <div class="form-upload__input-line form-upload__input-line--btn">
+                <button class="button" type="submit">Добавить</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

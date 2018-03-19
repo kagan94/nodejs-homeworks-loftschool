@@ -1,0 +1,12 @@
+section.product
+  .container
+    .product__subtitle.subtitle Товары от студии Архипова
+    h2.product__title.title Мой личный бренд
+    ul.product__list
+      each product in products
+        li.product__item
+          img(src=`./uploads/products/${product.photo}`).product__img
+          .product__hover
+            .product__description
+              .product__name= product.name
+              .product__price= `$ ${product.price}`
