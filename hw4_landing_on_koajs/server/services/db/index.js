@@ -10,10 +10,10 @@ const adapter = new FileSync(dbPath);
 const db = low(adapter);
 
 // Default values, if json file wasn't created yet
-db.defaults({
-  skills: {},
-  products: []
-}).write();
+// db.defaults({
+//   skills: {},
+//   products: []
+// }).write();
 
 var DBService = function () {};
 
@@ -42,4 +42,5 @@ DBService.prototype.findUserByEmail = (email) => {
     .value();
 };
 
-module.exports = new DBService();
+const _db = new DBService();
+module.exports = _db;
