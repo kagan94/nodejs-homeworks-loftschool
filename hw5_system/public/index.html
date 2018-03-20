@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>LoftSystem</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+  <div id="app-main">
+    <header-bar></header-bar>
+    <div class="container">
+        <router-view v-if="getUser"></router-view>
+        <main-component v-else></main-component>
+    </div>
+  </div>
+
+<script src="main.min.js"></script>
+</body>
+</html>
