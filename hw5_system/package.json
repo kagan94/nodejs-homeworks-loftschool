@@ -1,0 +1,29 @@
+{
+  "name": "hw5_system",
+  "version": "1.0.0",
+  "description": "Task itself can be found here (the original version is below): [https://github.com/AlexSyrtsov/loftschool_node](https://github.com/AlexSyrtsov/loftschool_node)",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "express-router": "^0.0.1",
+    "express-session": "^1.15.6",
+    "formidable": "^1.2.1",
+    "mongoose": "^5.0.11",
+    "morgan": "^1.9.0",
+    "pg": "^7.4.1",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.37.3",
+    "sequelize-connect": "^2.0.0",
+    "yargs": "^11.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,12 @@
+{
+  "orm": {
+    "sequelize": {
+      "host": "localhost",
+      "dialect": "postgres",
+      "port": 5432,
+      "database": "loftsystem",
+      "user": "testuser",
+      "password": "testuser"
+    }
+  }
+}
