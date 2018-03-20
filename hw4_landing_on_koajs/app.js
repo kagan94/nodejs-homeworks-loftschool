@@ -7,7 +7,7 @@ const serve = require('koa-static');
 const flash = require('koa-connect-flash');
 const Koa = require('koa');
 const path = require('path');
-const app = module.exports = new Koa();
+const app = new Koa();
 
 const PORT = 3002;
 const env = process.env.NODE_ENV || 'development';
