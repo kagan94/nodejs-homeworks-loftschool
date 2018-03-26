@@ -2,12 +2,20 @@
  * Created by Leo on 3/20/2018.
  */
 
-module.exports.isUser = (req, res, next) => {
+const sequelize = require('../helpers/sequelize');
+const decodeJwtToken = require('../helpers/decode-jwt-token');
 
-  // TODO: Add support of validation based on JWT token
-
-  if (req.session && req.session.isUser) {
-    return next();
+module.exports.isAuthenticated = async function (req, res, next) {
+  console.log(req.session, req.session.accessToken);
+  if (!req.session || !req.session.accessToken) {
+    return res.status(401).send();
   }
-  res.status(401);
+
+  const decodedToken = decodeJwtToken(req.session.accessToken);
+  const user = await sequelize.models.user.findOne({id: decodedToken.id});
+  if (!user) {
+    return res.status(400).send({error: 'User not found'});
+  }
+  req.user = user;
+  await next();
 };

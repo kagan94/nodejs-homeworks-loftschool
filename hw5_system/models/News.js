@@ -9,10 +9,16 @@ module.exports = (sequelize, DataTypes) => {
     text: {
       type: DataTypes.STRING
     },
+    userId: {
+      type: DataTypes.INTEGER
+    }
+  }, {
     timestamps: true
   });
+
   News.associate = function (models) {
-    News.belongsTo(models.user);
+    News.belongsTo(models.user, {foreignKey: 'userId', targetKey: 'id'});
   };
+
   return News;
 };
