@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 
-// router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
 router.use(bodyParser.json({type: 'text/plain'}));
 

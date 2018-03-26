@@ -1,6 +1,6 @@
 const sequelize = require('../helpers/sequelize');
 const bCrypt = require('bcryptjs');
-const fs = require('fs');
+// const fs = require('fs');
 
 const encryptPassword = (password) => bCrypt.hashSync(password, 0, null);
 
@@ -9,7 +9,6 @@ module.exports.getUsers = async (req, res) => {
   res.send(users);
 };
 
-// module.exports.createUser = async (req, res) => {
 module.exports.createUser = async (req, res) => {
   const user = await sequelize.models.user.create({
     firstName: req.body.firstName || '',

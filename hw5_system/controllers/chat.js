@@ -2,8 +2,7 @@
  * Created by Leo on 3/26/2018.
  */
 
-let clients = [];
-let sockets = {};
+let clients = {};
 
 module.exports = (server) => {
   const io = require('socket.io')(server);
@@ -19,7 +18,7 @@ module.exports = (server) => {
     client.broadcast.emit('new user', clientData);
 
     // Send "all users" to current client
-    clients.push(clientData);
+    clients[client.id] = clientData;
     client.emit('all users', clients);
 
     // Handle sent message
@@ -28,20 +27,17 @@ module.exports = (server) => {
       console.log('curr client id %s', client.id);
       client.broadcast
         .to(targetClientId)
-        .emit('chat message', [msg, client.id]);
+        .emit('chat message', msg, client.id);
     });
 
     // Handle disconnection
     client.on('disconnect', function () {
-      clients = clients.filter(function (el) {
-        return el.id !== client.id;
-      });
-      delete sockets[client.id];
+      delete clients[client.id];
 
       // Notify other users that user left
       client.broadcast.emit('delete user', client.id);
 
-      console.log('client %s disconnected. Total remaining users: %s', client.id, clients.length);
+      console.log('client %s disconnected. Total remaining users: %s', client.id, Object.keys(clients).length);
     });
   });
 };
