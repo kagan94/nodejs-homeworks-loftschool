@@ -30,7 +30,7 @@ module.exports.createUser = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
   const userData = req.body;
-  const user = await sequelize.models.user.find({where: {id: req.params.id}});
+  const user = await sequelize.models.user.findOne({where: {id: req.params.id}});
   if (!user) return res.status(400).send({error: 'User not found'});
 
   if (userData.oldPassword && userData.password) {

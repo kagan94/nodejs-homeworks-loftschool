@@ -3,62 +3,41 @@ const fs = require('fs');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const flash = require('connect-flash');
 const express = require('express');
 const sequelize = require('./helpers/sequelize');
 const config = require('./helpers/config');
-const startChat = require('./controllers/chat');
+const enableChat = require('./controllers/chat');
 
 const app = express();
+const server = require('http').createServer(app);
 const PORT = 3000;
+enableChat(server);
 
 app.use(logger('dev'));
 
-// app.use(cors());
 app.use(session({
   secret: config.secretKey,
   key: 'session.id',
   cookie: {
     path: '/',
     httpOnly: false,
-    maxAge: null, //48 * 60 * 60 * 1000, // 2 days
+    maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
     secure: false
   },
   saveUninitialized: false,
   resave: false
 }));
-
-// app.use(function (req, res, next) {
-//   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   next();
-// });
-
-// app.all('/', function (req, res, next) {
-//   console.log(req.session.id, 'session_id');
-//   next();
-// });
-
-// app.get('/api/getNews', function (req, res) {
-//   // req.session.reload();
-//   console.log(req.session.accessToken, 'accessTokenNews');
-//   // const news = await getNews();
-//   res.send([]);
-// });
-
-//app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 function main () {
   // Routes
   app.use('/api', require('./routes/api'));
 
-  app.get('/', function (req, res) {
+  app.get('*', function (req, res) {
     res.send(fs.readFileSync(path.resolve(path.join('public', 'index.html')), 'utf8'));
   });
 
-  const server = require('http').createServer(app);
-  startChat(server);
   server.listen(PORT);
   console.log('Started listening on port %s. Environment: ', PORT, config.env);
 }
@@ -85,3 +64,5 @@ sequelize
   .catch((err) => {
     console.log('Ошибка соединения', err.message);
   });
+
+module.exports = server;

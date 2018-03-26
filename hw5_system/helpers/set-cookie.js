@@ -4,7 +4,8 @@
 
 module.exports = (res, cookieKey, data) => {
   res.cookie(cookieKey, JSON.stringify(data), {
-    expires: new Date(Date.now() + 2 * 604800000),
-    path: '/'
+    maxAge: ((((1000 * 60) * 60) * 24) * 7), // 7 days
+    path: '/',
+    httpOnly: true
   });
 };

@@ -3,6 +3,7 @@
  */
 
 let clients = [];
+let sockets = {};
 
 module.exports = (server) => {
   const io = require('socket.io')(server);
@@ -12,10 +13,10 @@ module.exports = (server) => {
       id: client.id,
       username: client.handshake.headers.username
     };
-    console.log('Client connected...', client.handshake.headers.username);
+    console.log('Client %s connected, id: %s. Total users: %s', client.handshake.headers.username, client.id, clients.length + 1);
 
     // Notify other users about new user
-    client.broadcast.json.emit('new user', clientData);
+    client.broadcast.emit('new user', clientData);
 
     // Send "all users" to current client
     clients.push(clientData);
@@ -23,20 +24,24 @@ module.exports = (server) => {
 
     // Handle sent message
     client.on('chat message', function (msg, targetClientId) {
+      console.log('received msg', msg, 'targetClientID', targetClientId);
+      console.log('curr client id %s', client.id);
       client.broadcast
         .to(targetClientId)
-        .json.emit('chat message', [msg, client.id]);
+        .emit('chat message', [msg, client.id]);
     });
 
     // Handle disconnection
     client.on('disconnect', function () {
-      clients = clients.splice(clients.findIndex(function(el){
-        return el.id === client.id;
-      }), 1);
-      // delete clients[client.id];
+      clients = clients.filter(function (el) {
+        return el.id !== client.id;
+      });
+      delete sockets[client.id];
 
       // Notify other users that user left
-      client.broadcast.json.emit('delete user', client.id);
+      client.broadcast.emit('delete user', client.id);
+
+      console.log('client %s disconnected. Total remaining users: %s', client.id, clients.length);
     });
   });
 };
