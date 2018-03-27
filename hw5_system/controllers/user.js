@@ -23,6 +23,7 @@ module.exports.createUser = async (req, res) => {
 
   const accessToken = user.encodeToken();
   await user.update({access_token: accessToken, permissionId: user.id});
+  req.session.accessToken = accessToken;
 
   res.send(user);
 };

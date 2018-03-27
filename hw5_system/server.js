@@ -10,7 +10,7 @@ const enableChat = require('./controllers/chat');
 
 const app = express();
 const server = require('http').createServer(app);
-const PORT = 3000;
+const PORT = process.env.PORT || 8080;
 enableChat(server);
 
 app.use(logger('dev'));
