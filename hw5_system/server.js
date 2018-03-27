@@ -2,32 +2,32 @@ const path = require('path');
 const fs = require('fs');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const session = require('express-session');
-const flash = require('connect-flash');
 const express = require('express');
 const sequelize = require('./helpers/sequelize');
 const config = require('./helpers/config');
+const enableChat = require('./controllers/chat');
 
 const app = express();
-const PORT = 3000;
+const server = require('http').createServer(app);
+const PORT = process.env.PORT || 8080;
+enableChat(server);
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+
 app.use(session({
-  secret: 'secretKeyHere..123',
-  key: 'key',
+  secret: config.secretKey,
+  key: 'session.id',
   cookie: {
     path: '/',
-    httpOnly: true,
-    maxAge: 30 * 60 * 1000
+    httpOnly: false,
+    maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+    secure: false
   },
   saveUninitialized: false,
   resave: false
 }));
 app.use(cookieParser());
-app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
 function main () {
@@ -38,16 +38,31 @@ function main () {
     res.send(fs.readFileSync(path.resolve(path.join('public', 'index.html')), 'utf8'));
   });
 
-  app.listen(PORT);
-  logger.log('Started listening on port %s. Environment: ', PORT, config.env);
+  server.listen(PORT);
+  console.log('Started listening on port %s. Environment: ', PORT, config.env);
 }
 
 sequelize
   .authenticate()
   .then(() => {
-    logger.log('Соединение установлено');
+    console.log('Соединение установлено');
+
+    // Bind DB models
+    const modelNames = ['User', 'News'];
+    for (const modelName of modelNames) {
+      sequelize.import(`./models/${modelName}.js`);
+    }
+    for (const modelName of Object.keys(sequelize.models)) {
+      if ('associate' in sequelize.models[modelName]) {
+        sequelize.models[modelName].associate(sequelize.models);
+      }
+    }
+    sequelize.sync();
+
     main();
   })
   .catch((err) => {
-    logger.log('Ошибка соединения', err.message);
+    console.log('Ошибка соединения', err.message);
   });
+
+module.exports = server;

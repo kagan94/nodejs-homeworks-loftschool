@@ -10,6 +10,6 @@ const args = yargs.usage('node server.js [options]')
   })
   .argv;
 
-args.env = args.env in ['production', 'development'] ? args.env : 'development';
+args.env = ['production', 'development'].includes(args.environment) ? args.environment : 'development';
 
 module.exports = args;

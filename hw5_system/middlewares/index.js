@@ -2,12 +2,17 @@
  * Created by Leo on 3/20/2018.
  */
 
-module.exports.isUser = (req, res, next) => {
+const sequelize = require('../helpers/sequelize');
+const decodeJwtToken = require('../helpers/decode-jwt-token');
 
-  // TODO: Add support of validation based on JWT token
+module.exports.AuthMiddleware = async function (req, res, next) {
+  const accessToken = req.session ? req.session.accessToken : null;
+  if (!accessToken) return res.status(400).send({error: 'Access token is not defined in cookie'});
 
-  if (req.session && req.session.isUser) {
-    return next();
-  }
-  res.status(401);
+  const decodedToken = decodeJwtToken(accessToken);
+  const user = await sequelize.models.user.findOne({where: {id: decodedToken.id}});
+  if (!user) return res.status(400).send({error: 'User not found'});
+
+  req.user = user;
+  await next();
 };

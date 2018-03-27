@@ -1,4 +1,5 @@
 {
+  "secretKey": "sdasdasd!2133sdasSD:,.dasdas",
   "orm": {
     "sequelize": {
       "host": "localhost",

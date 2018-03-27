@@ -32357,7 +32357,8 @@ var actions = {
         console.log('Необходимо вернуть список всех новостей из базы данных!');
         return new Promise(function (resolve, reject) {
             return fetch('/api/getNews', {
-                method: 'GET'
+                method: 'GET',
+                credentials: 'include',
             })
                 .then(function (response) {
                 return response.json();
@@ -32385,6 +32386,7 @@ var actions = {
         console.log('Необходимо вернуть обновленный список всех новостей из базы данных!');
         return fetch('/api/newNews/', {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify(payload)
         })
             .then(function (response) {
@@ -32412,6 +32414,7 @@ var actions = {
         console.log('Необходимо вернуть обновленный список всех новостей из базы данных!');
         return fetch('/api/updateNews/' + payload.id, {
             method: 'PUT',
+			credentials: 'include',
             body: JSON.stringify(payload)
         })
             .then(function (response) {
@@ -32438,7 +32441,8 @@ var actions = {
         console.log('Отправляемые данные: ', payload);
         console.log('Необходимо вернуть обновленный список всех новостей из базы данных!');
         return fetch('/api/deleteNews/' + payload.id, {
-            method: 'delete'
+            method: 'delete',
+			credentials: 'include',
         })
             .then(function (response) {
             return response.json();
@@ -32465,7 +32469,8 @@ var actions = {
         console.log('Необходимо вернуть список всех пользоватлей из базы данных!');
         return new Promise(function (resolve, reject) {
             return fetch('/api/getUsers', {
-                method: 'GET'
+                method: 'GET',
+				credentials: 'include',
             })
                 .then(function (response) {
                 return response.json();
@@ -32494,6 +32499,7 @@ var actions = {
             console.log('Отправляемые данные: ', payload);
             return fetch('/api/updateUserPermission/' + payload.permissionId, {
                 method: 'PUT',
+				credentials: 'include',
                 body: JSON.stringify(payload)
             })
                 .then(function (response) {
@@ -32523,6 +32529,7 @@ var actions = {
         console.log('Необходимо вернуть объект авторизовавшегося пользователя!');
         fetch('/api/authFromToken', {
             method: 'POST',
+			credentials: 'include',
             body: JSON.stringify({ access_token: payload })
         })
             .then(function (response) {
@@ -32591,6 +32598,7 @@ var actions = {
         console.log('Необходимо вернуть объект обновленного пользователя!');
         return fetch('/api/updateUser/' + payload.id, {
             method: 'PUT',
+			credentials: 'include',
             body: JSON.stringify(payload)
         })
             .then(function (response) {
@@ -32625,6 +32633,7 @@ var actions = {
         console.log('Необходимо вернуть объект со свойством path, которое хранит путь до сохраненного изображения.');
         return fetch('/api/saveUserImage/' + payload.id, {
             method: 'post',
+			credentials: 'include',
             body: data
         })
             .then(function (response) {
@@ -32639,7 +32648,8 @@ var actions = {
         console.log('DELETE-запрос на /api/deleteUser/:id - удаление пользователя.');
         console.log('Отправляемые данные: ', payload);
         return fetch('/api/deleteUser/' + payload.id, {
-            method: 'delete'
+            method: 'delete',
+			credentials: 'include',
         })
             .then(function (response) {
             return response.json();

@@ -1,7 +1,8 @@
 const sequelize = require('../helpers/sequelize');
-const formidable = require('formidable');
-const path = require('path');
-const fs = require('fs');
+const bCrypt = require('bcryptjs');
+// const fs = require('fs');
+
+const encryptPassword = (password) => bCrypt.hashSync(password, 0, null);
 
 module.exports.getUsers = async (req, res) => {
   const users = await sequelize.models.user.findAll();
@@ -10,25 +11,35 @@ module.exports.getUsers = async (req, res) => {
 
 module.exports.createUser = async (req, res) => {
   const user = await sequelize.models.user.create({
-    name: req.body.name,
-    password: req.body.password
+    firstName: req.body.firstName || '',
+    middleName: req.body.middleName || '',
+    surName: req.body.surName || '',
+    username: req.body.username || '',
+    password: encryptPassword(req.body.password),
+    img: null,
+    permission: req.body.permission,
+    access_token: ''
   });
 
-  // TODO: genereate payload for new user
-  // const payload = 'sdasdasdasda1231dcasdas';
+  const accessToken = user.encodeToken();
+  await user.update({access_token: accessToken, permissionId: user.id});
+  req.session.accessToken = accessToken;
+
   res.send(user);
 };
 
 module.exports.updateUser = async (req, res) => {
-  const userId = req.params.id;
-  const user = await sequelize.models.user.find({where: {id: userId}});
-  if (!user)
-    return res.status(400);
+  const userData = req.body;
+  const user = await sequelize.models.user.findOne({where: {id: req.params.id}});
+  if (!user) return res.status(400).send({error: 'User not found'});
 
-  await user.update({
-    name: req.body.name,
-    password: req.body.password
-  });
+  if (userData.oldPassword && userData.password) {
+    if (!user.isPasswordValid(userData.oldPassword)) {
+      return res.status(400).send({error: 'Old password is wrong'});
+    }
+    userData.password = encryptPassword(userData.password);
+  }
+  await user.update(userData);
   res.send(user);
 };
 
@@ -43,55 +54,26 @@ module.exports.deleteUser = async (req, res) => {
 };
 
 module.exports.saveUserImage = async (req, res) => {
-  const userId = req.params.id;
-  const user = await sequelize.models.user.find({where: {id: userId}});
+  const user = await sequelize.models.user.find({where: {id: req.params.id}});
   if (!user) {
+    // fs.unlinkSync(req.file.path);
     return res.status(400).send('User not found');
   }
-
-  const avatarsDir = path.join(process.cwd(), 'public', 'uploads', 'avatars');
-  if (!fs.existsSync(avatarsDir))
-    fs.mkdirSync(avatarsDir);
-
-  const form = new formidable.IncomingForm();
-  form.uploadDir = avatarsDir;
-
-  try {
-    await form.parse(req, async function (err, fields, files) {
-      if (err) throw new Error('Error occurred while saving ' + err.message);
-
-      const fileKey = Object.keys(files)[0];
-      const file = fileKey ? files[fileKey] : null;
-
-      if (files.length === 0) throw new Error('File was not supplied');
-      if (file.size === 0) throw new Error('File is empty');
-
-      const fileExt = file.name.split('.').pop();
-      const newFileName = Date.now() + '.' + fileExt;
-
-      const oldPath = file.path;
-      const newPath = path.join(avatarsDir, newFileName);
-      fs.renameSync(oldPath, newPath);
-
-      // Remove old avatar
-      const oldAvatarPath = path.join(avatarsDir, user.avatar);
-      fs.removeSync(oldAvatarPath);
-
-      // Update user avatar path in DB
-      await user.update({avatar: newFileName});
-
-      return res.send(newFileName);
-    });
-  } catch (err) {
-    return res.status(400).send('Error occurred while saving ' + err.message);
-  }
+  res.send({path: `uploads/avatars/${req.file.filename}`});
 };
 
-module.exports.updateUserPermission = (req, res) => {
-  const tgtUserId = req.params.id;
-  const data = req.body;
+module.exports.updateUserPermission = async (req, res) => {
+  const user = await sequelize.models.user.findOne({where: {id: req.params.id}});
+  if (!user) return res.status(400).send({error: 'User not found'});
 
-  // TODO: update user permissions
+  const reqPermissions = req.body.permission;
+  const newPermissions = user.permission;
 
-  res.send('');
+  for (const permissionName in reqPermissions) {
+    if (!reqPermissions.hasOwnProperty(permissionName)) continue;
+    Object.assign(newPermissions[permissionName], reqPermissions[permissionName]);
+  }
+
+  await user.update({permission: newPermissions});
+  res.send({status: 'ok'});
 };
