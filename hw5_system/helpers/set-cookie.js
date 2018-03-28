@@ -3,7 +3,7 @@
  */
 
 module.exports = (res, cookieKey, data) => {
-  res.cookie(cookieKey, JSON.stringify(data), {
+  res.cookie(cookieKey, data, {
     maxAge: ((((1000 * 60) * 60) * 24) * 7), // 7 days
     path: '/',
     httpOnly: true
